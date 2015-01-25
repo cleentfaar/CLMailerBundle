@@ -1,0 +1,10 @@
+{% set _block_header = block('header') %}
+{% set _block_content = block('content') %}
+{% set _block_footer = block('footer') %}
+{%- if _block_header is not empty -%}
+  {{- _block_header|markdown_fallback_stripped -}}
+{%- endif -%}
+{{- _block_content|markdown_fallback_stripped -}}
+{%- if _block_footer is not empty -%}
+  {{- _block_footer|markdown_fallback_stripped -}}
+{%- endif -%}

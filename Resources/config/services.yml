@@ -1,0 +1,27 @@
+services:
+  cl_mailer.message_renderer:
+    class: CL\Bundle\MailerBundle\Mailer\MessageRenderer
+    arguments:
+      # Engine to use will be overridden by RegisterRenderingEnginePass
+      - @templating.engine.php
+
+  cl_mailer.message_factory:
+    class: CL\Bundle\MailerBundle\Mailer\MessageFactory
+    arguments:
+      - @cl_mailer.message_renderer
+      - @translator
+      - %cl_mailer.types%
+      - %cl_mailer.defaults%
+
+  cl_mailer.mailer_helper:
+    class: CL\Bundle\MailerBundle\Mailer\MailerHelper
+    arguments:
+      - @swiftmailer.mailer
+      - @cl_mailer.message_factory
+
+  cl_mailer.twig_extension.markdown_fallback:
+    class: CL\Bundle\MailerBundle\Twig\MarkdownFallbackExtension
+    arguments:
+      - @twig
+    tags:
+      - { name: twig.extension }

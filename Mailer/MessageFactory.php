@@ -7,6 +7,11 @@ use Symfony\Component\Translation\TranslatorInterface;
 class MessageFactory
 {
     /**
+     * @var MessageRenderer
+     */
+    private $renderer;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -30,8 +35,7 @@ class MessageFactory
     ) {
         $this->renderer   = $messageRenderer;
         $this->translator = $translator;
-
-        $this->setTypes($types, $defaultOptions);
+        $this->types      = $this->mergeTypes($types, $defaultOptions);
     }
 
     /**
@@ -182,13 +186,15 @@ class MessageFactory
     /**
      * @param array $types
      * @param array $defaultOptions
+     *
+     * @return array
      */
-    private function setTypes(array $types, array $defaultOptions)
+    private function mergeTypes(array $types, array $defaultOptions)
     {
         foreach ($types as $type => $options) {
             $types[$type] = array_merge($defaultOptions, $options);
         }
 
-        $this->types = $types;
+        return $types;
     }
 }

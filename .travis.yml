@@ -7,7 +7,7 @@ php:
 
 before_script:
  - composer self-update
- - composer install --dev
+ - composer install --no-interaction
 
 script: phpunit --coverage-clover=coverage.clover
 

@@ -22,7 +22,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
         // NOTE: we are intentionally NOT creating the twig engine for this test...
         // $twigEngineDefinition= $this->createTwigEngineDefinition();
 
-        $this->assertPhpIsUsed();
+        $this->assertEngineUsed(self::PHP_ENGINE_ID);
     }
 
     public function testIfCompilerPassAddsPhpEngineIfTwigNotEnabled()
@@ -34,7 +34,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
         // the "cl_mailer.twig=false" parameter still ignores it and uses php instead
         $this->createTwigEngineDefinition();
 
-        $this->assertPhpIsUsed();
+        $this->assertEngineUsed(self::PHP_ENGINE_ID);
     }
 
     public function testIfCompilerPassAddsTwigEngineIfTwigEnabledAndAvailable()
@@ -45,7 +45,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
         // We need the twig engine to be able to use it obviously
         $this->createTwigEngineDefinition();
 
-        $this->assertTwigIsUsed();
+        $this->assertEngineUsed(self::TWIG_ENGINE_ID);
     }
 
     protected function registerCompilerPass(ContainerBuilder $container)
@@ -55,35 +55,18 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
 
     private function prepare()
     {
-        $messageRendererBuilder = $this->getMockBuilder('CL\Bundle\MailerBundle\Mailer\MessageRenderer');
-        $messageRendererBuilder->disableOriginalConstructor();
-
-        $messageRendererDefinition = new Definition(get_class($messageRendererBuilder->getMock()));
-
-        $this->setDefinition(self::MESSAGE_RENDERER_ID, $messageRendererDefinition);
-
+        $this->createMessageRendererDefinition();
         $this->createPhpEngineDefinition();
     }
 
-    private function assertPhpIsUsed()
+    private function assertEngineUsed($id)
     {
         $this->compile();
 
         $this->assertContainerBuilderHasServiceDefinitionWithArgument(
             self::MESSAGE_RENDERER_ID,
             0,
-            new Reference(self::PHP_ENGINE_ID)
-        );
-    }
-
-    private function assertTwigIsUsed()
-    {
-        $this->compile();
-
-        $this->assertContainerBuilderHasServiceDefinitionWithArgument(
-            self::MESSAGE_RENDERER_ID,
-            0,
-            new Reference(self::TWIG_ENGINE_ID)
+            new Reference($id)
         );
     }
 
@@ -92,7 +75,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
      */
     private function createTwigEngineDefinition()
     {
-        return $this->createEngineDefinition(self::TWIG_ENGINE_ID, 'Symfony\Bundle\TwigBundle\TwigEngine');
+        return $this->createDefinition(self::TWIG_ENGINE_ID, 'Symfony\Bundle\TwigBundle\TwigEngine');
     }
 
     /**
@@ -100,7 +83,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
      */
     private function createPhpEngineDefinition()
     {
-        return $this->createEngineDefinition(self::PHP_ENGINE_ID, 'Symfony\Component\Templating\PhpEngine');
+        return $this->createDefinition(self::PHP_ENGINE_ID, 'Symfony\Component\Templating\PhpEngine');
     }
 
     /**
@@ -109,15 +92,22 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
      *
      * @return string
      */
-    private function createEngineDefinition($id, $class)
+    private function createDefinition($id, $class)
     {
         $builder = $this->getMockBuilder($class);
         $builder->disableOriginalConstructor();
 
-        $engineDefinition = new Definition(get_class($builder->getMock()));
-        $this->setDefinition($id, $engineDefinition);
+        $this->setDefinition($id, new Definition(get_class($builder->getMock())));
 
         return $id;
+    }
+
+    /**
+     * @return string
+     */
+    private function createMessageRendererDefinition()
+    {
+        return $this->createDefinition(self::MESSAGE_RENDERER_ID, 'CL\Bundle\MailerBundle\Mailer\MessageRenderer');
     }
 
     /**

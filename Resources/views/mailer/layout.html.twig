@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>{{ title }}</title>
+    {%- if title is not empty %}<title>{{ title }}</title>{% endif -%}
     {# NOTE: For sake of maintainability, every html-template will get all applicable style-attributes injected into it #}
     {# This is done by converting all styles found in the stylesheet template using the CssToInlineStyles class #}
   </head>

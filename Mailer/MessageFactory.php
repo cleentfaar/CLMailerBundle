@@ -54,14 +54,17 @@ class MessageFactory
             $subjectParams = [];
         }
 
-        $subject = $this->translator->trans($subject, $subjectParams, 'mailer');
-        $message = \Swift_Message::newInstance();
+        $translatedSubject = $this->translator->trans($subject, $subjectParams, 'mailer');
+        if ($translatedSubject === $subject) {
+            $translatedSubject = null;
+        }
 
-        $message->setSubject($subject);
+        $message = \Swift_Message::newInstance();
+        $message->setSubject($translatedSubject);
         $message->setFrom($this->determineFrom($type, $from));
         $message->setTo($this->determineTo($type, $to));
 
-        $variables['title'] = $subject;
+        $variables['title'] = $translatedSubject;
         $template           = $this->getTypeOption($type, 'template');
         $htmlLayout         = $this->getTypeOption($type, 'html_layout');
         $plainTextLayout    = $this->getTypeOption($type, 'plain_text_layout');

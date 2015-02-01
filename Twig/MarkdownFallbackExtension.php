@@ -28,11 +28,11 @@ class MarkdownFallbackExtension extends \Twig_Extension
     /**
      * {@inheritdoc}
      */
-    public function getFunctions()
+    public function getFilters()
     {
         return [
-            new \Twig_SimpleFunction('markdown_fallback', [&$this, 'markdownFallback'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('markdown_fallback_stripped', [&$this, 'markdownFallbackStripped']),
+            new \Twig_SimpleFilter('markdown_fallback', [&$this, 'markdownFallback'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFilter('markdown_fallback_stripped', [&$this, 'markdownFallbackStripped']),
         ];
     }
 
@@ -45,15 +45,13 @@ class MarkdownFallbackExtension extends \Twig_Extension
     {
         $markdownText = trim($markdownText);
 
-        if ($function = $this->twig->getFunction('markdown')) {
-            return call_user_func($function->getCallable(), $markdownText);
+        if ($filter = $this->twig->getFilter('markdown')) {
+            $html = call_user_func($filter->getCallable(), $markdownText);
+        } else {
+            $html = $markdownText;
         }
 
-        if (!empty($markdownText)) {
-            return strip_tags($markdownText);
-        }
-
-        return null;
+        return $html ?: null;
     }
 
     /**

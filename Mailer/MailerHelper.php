@@ -52,4 +52,19 @@ class MailerHelper
 
         return $message;
     }
+
+    /**
+     * @param string $type
+     * @param array  $variables
+     * @param null   $to
+     * @param null   $from
+     * @param null   $subject
+     * @param array  $subjectParams
+     *
+     * @return bool
+     */
+    public function composeAndSend($type, array $variables = [], $to = null, $from = null, $subject = null, array $subjectParams = null)
+    {
+        return $this->send($this->compose($type, $variables, $to, $from, $subject, $subjectParams));
+    }
 }

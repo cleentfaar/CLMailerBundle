@@ -11,29 +11,35 @@ class RegisterMailersPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $helperId = 'cl_mailer.mailer_helper';
+        $registryId     = 'cl_mailer.util.mailer_registry';
+        $types          = $container->getParameter('cl_mailer.types');
+        $defaultOptions = $container->getParameter('cl_mailer.defaults');
 
-        if (!$container->hasDefinition($helperId)) {
+        if (!$container->hasDefinition($registryId)) {
             return;
         }
 
-        $tag        = 'cl_mailer.mailer';
-        $mustExtend = '\CL\Bundle\MailerBundle\Mailer\AbstractMailer';
+        $registryDefinition = $container->getDefinition($registryId);
 
-        foreach ($container->findTaggedServiceIds($tag) as $id => $tags) {
-            $mailerDefinition = $container->getDefinition($id);
-            $class            = $mailerDefinition->getClass();
+        foreach ($types as $type => $options) {
+            $mailerId         = $options['mailer'];
+            $mailerDefinition = $container->getDefinition($mailerId);
+            $mailerClass      = $mailerDefinition->getClass();
+            $mustImplement    = 'CL\Bundle\MailerBundle\Mailer\MailerInterface';
+            $options          = array_merge($defaultOptions, $options);
 
-            if (!is_subclass_of($class, $mustExtend)) {
-                throw new \LogicException(sprintf(
-                    'Service tagged with %s must extend the %s class, %s does not do this',
-                    $tag,
-                    $mustExtend,
-                    $class
+            unset($options['mailer']);
+
+            if (!in_array($mustImplement, class_implements($mailerClass))) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Can\'t register mailer %s; it must implement %s',
+                    $mailerClass,
+                    $mustImplement
                 ));
             }
 
-            $mailerDefinition->addMethodCall('setHelper', [new Reference($helperId)]);
+
+            $registryDefinition->addMethodCall('register', [$type, new Reference($mailerId), $options]);
         }
     }
 }

@@ -7,6 +7,11 @@ use Symfony\Component\Translation\TranslatorInterface;
 class MessageFactory
 {
     /**
+     * @var MailerRegistry
+     */
+    private $mailerRegistry;
+
+    /**
      * @var MessageRenderer
      */
     private $renderer;
@@ -17,25 +22,18 @@ class MessageFactory
     private $translator;
 
     /**
-     * @var array
-     */
-    private $types;
-
-    /**
+     * @param MailerRegistry      $mailerRegistry
      * @param MessageRenderer     $messageRenderer
      * @param TranslatorInterface $translator
-     * @param array               $types
-     * @param array               $defaultOptions
      */
     public function __construct(
+        MailerRegistry $mailerRegistry,
         MessageRenderer $messageRenderer,
-        TranslatorInterface $translator,
-        array $types,
-        array $defaultOptions = []
+        TranslatorInterface $translator
     ) {
-        $this->renderer   = $messageRenderer;
-        $this->translator = $translator;
-        $this->types      = $this->mergeTypes($types, $defaultOptions);
+        $this->mailerRegistry = $mailerRegistry;
+        $this->renderer       = $messageRenderer;
+        $this->translator     = $translator;
     }
 
     /**
@@ -72,7 +70,7 @@ class MessageFactory
         $template           = $this->getTypeOption($type, 'template');
         $htmlLayout         = $this->getTypeOption($type, 'html_layout');
         $plainTextLayout    = $this->getTypeOption($type, 'plain_text_layout');
-        $html               = $this->renderer->renderHtml($template, $htmlLayout, $variables);
+        $html               = $this->renderer->renderHtml($template, $htmlLayout, $variables, $this->getTypeOption($type, 'stylesheet'));
         $plainText          = $this->renderer->renderPlainText($template, $plainTextLayout, $variables);
 
         $message->setBody($html, 'text/html');
@@ -131,7 +129,7 @@ class MessageFactory
      */
     private function hasTypeOption($type, $option)
     {
-        $typeOptions = $this->getTypeOptions($type);
+        $typeOptions = $this->mailerRegistry->getOptions($type);
 
         return array_key_exists($option, $typeOptions) && $typeOptions[$option] !== null;
     }
@@ -144,11 +142,12 @@ class MessageFactory
      */
     private function getTypeOption($type, $option)
     {
-        $typeOptions = $this->getTypeOptions($type);
+        $typeOptions = $this->mailerRegistry->getOptions($type);
 
         if (!array_key_exists($option, $typeOptions)) {
             throw new \InvalidArgumentException(sprintf(
-                'There is no option with that name (%s) for this type: %s. Available options are: %s',
+                'There is no option with that name (%s) for this type: %s. Available options are: %s. ' .
+                'You can also add it to the default options and forgettaboutit :)',
                 $option,
                 $type,
                 implode(', ', array_keys($typeOptions))
@@ -156,45 +155,5 @@ class MessageFactory
         }
 
         return $typeOptions[$option];
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return array
-     */
-    private function getTypeOptions($type)
-    {
-        if (!is_string($type)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Type must be a string, got: %s',
-                gettype($type)
-            ));
-        }
-
-        if (!array_key_exists($type, $this->types)) {
-            throw new \InvalidArgumentException(sprintf(
-                'There is no type of e-mail with that name: %s. Available types are: %s',
-                $type,
-                implode(', ', array_keys($this->types))
-            ));
-        }
-
-        return $this->types[$type];
-    }
-
-    /**
-     * @param array $types
-     * @param array $defaultOptions
-     *
-     * @return array
-     */
-    private function mergeTypes(array $types, array $defaultOptions)
-    {
-        foreach ($types as $type => $options) {
-            $types[$type] = array_merge($defaultOptions, $options);
-        }
-
-        return $types;
     }
 }

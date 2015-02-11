@@ -14,8 +14,10 @@ cl_mailer:
       template: YourAppBundle:mailer:contact.md.twig
       subject: Someone wants to say hi! # see below
       to_email: contact@yourapp.com # see below
+      mailer: acme.contact_mailer
 ```
 
+- The value for `mailer` should be the id of a service you created that will handle mails for this type. The service should implement `MailerInterface`.
 - The value for `subject` can be a translatable message ID, just make sure you define the translation under the `mailer` domain.
 - The use the `to_email` option is not necessary for every type, i.e. in some cases you might want to pass a value
 which is only available when sending the e-mail. For a contact form however, we always want the TO-address to be the same.
@@ -32,7 +34,7 @@ namespace AppBundle\Mailer;
 use AppBundle\Entity\ContactForm;
 use CL\Bundle\MailerBundle\Mailer\AbstractMailer;
 
-class ContactMailer extends AbstractMailer
+class ContactMailer implements AbstractMailer
 {
     /**
      * @param ContactForm $contactForm
@@ -67,8 +69,8 @@ into two separate methods. However, it's perfectly fine to just do it all in one
 services:
   app.mailer.contact:
     class: AppBundle\Mailer\ContactMailer
-    tags:
-      - { name: cl_mailer.mailer }
+    args:
+        - @cl_mailer.util.mailer_helper
 ```
 
 
@@ -160,3 +162,8 @@ class ContactController extends AbstractController
     }
 }
 ```
+
+# Want more
+
+There is another chapter about previewing your e-mails within a browser.
+Check it out in the [preview documentation](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/preview.md)!

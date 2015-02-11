@@ -10,7 +10,7 @@ class RegisterRenderingEnginePass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $messageRendererId = 'cl_mailer.message_renderer';
+        $messageRendererId = 'cl_mailer.util.message_renderer';
         $twigId            = 'templating.engine.twig';
         $phpId             = 'templating.engine.php';
 

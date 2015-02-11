@@ -27,6 +27,7 @@ One of it's key features is that it let's you support both HTML and plain text f
 - [Installation](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/installation.md)
 - [Configuration](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/configuration.md)
 - [Usage](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/usage.md)
+- [Previewing your e-mails](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/preview.md)
 - [Contributing](https://github.com/cleentfaar/CLMailerBundle/blob/master/Resources/doc/contributing.md)
 
 
@@ -58,11 +59,12 @@ You can define your own stylesheet under the `stylesheet` configuration option:
 # app/config/config.yml
 cl_mailer:
   defaults:
-    stylesheet: AppBundle:mailer:stylesheet.css.twig
+    stylesheet: %kernel.root_dir%/../web/css/mail.css
 ```
 
 ## Attributions
 
+- [Thijs Verkoyen's CssToInlineConverter](https://github.com/tijsverkoyen/CssToInlineStyles) - Allowing this bundle to convert a given stylesheet to inline style attributes and stay compatible with Gmail!
 - [MailChimp HTML & CSS](http://templates.mailchimp.com/development/) - For the HTML layout and CSS reset that supports most clients.
 
 

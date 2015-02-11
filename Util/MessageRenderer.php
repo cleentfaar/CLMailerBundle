@@ -48,7 +48,7 @@ class MessageRenderer
         $html = $this->doRenderHtml($template, $layout, $variables);
 
         if ($stylesheet !== null) {
-            $css             = $this->engine->render($stylesheet);
+            $css             = file_get_contents($stylesheet);
             $cssToInlineHtml = new CssToInlineStyles($html, $css);
 
             return $cssToInlineHtml->convert();

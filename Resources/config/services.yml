@@ -8,19 +8,21 @@ services:
   cl_mailer.util.message_factory:
     class: CL\Bundle\MailerBundle\Util\MessageFactory
     arguments:
-      - @cl_mailer.message_renderer
+      - @cl_mailer.util.mailer_registry
+      - @cl_mailer.util.message_renderer
       - @translator
-      - %cl_mailer.types%
-      - %cl_mailer.defaults%
 
-  cl_mailer.util.mailer_previewer:
-    class: CL\Bundle\MailerBundle\Util\MailerPreviewer
+  cl_mailer.util.mailer_registry:
+    class: CL\Bundle\MailerBundle\Util\MailerRegistry
+
+  cl_mailer.util.message_previewer:
+    class: CL\Bundle\MailerBundle\Util\MessagePreviewer
 
   cl_mailer.util.mailer_helper:
     class: CL\Bundle\MailerBundle\Util\MailerHelper
     arguments:
       - @swiftmailer.mailer
-      - @cl_mailer.message_factory
+      - @cl_mailer.util.message_factory
 
   cl_mailer.twig_extension.markdown_fallback:
     class: CL\Bundle\MailerBundle\Twig\MarkdownFallbackExtension
@@ -28,3 +30,8 @@ services:
       - @twig
     tags:
       - { name: twig.extension }
+
+  cl_mailer.mailer.welcome:
+    class: CL\Bundle\MailerBundle\Mailer\WelcomeMailer
+    arguments:
+      - @cl_mailer.util.mailer_helper

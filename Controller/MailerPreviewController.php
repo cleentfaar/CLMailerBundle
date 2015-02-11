@@ -2,23 +2,26 @@
 
 namespace CL\Bundle\MailerBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
 
-class MailerPreviewController extends Controller
+abstract class MailerPreviewController extends Controller
 {
-    /**
-     * @Route("/mailer/preview/{key}/", name="cl_mailer_preview")
-     * @Method({"GET"})
-     */
-    public function indexAction(Request $request, $key)
+    public function previewAction($type)
     {
-        $html = $this->get('cl_mailer.previewer')->preview($key, 'html');
+        $mailer  = $this->get('cl_mailer.util.mailer_registry')->get($type);
+        $message = $this->createMessage($mailer, $type);
+        $html    = $this->get('cl_mailer.util.message_previewer')->preview($message);
 
-        return $this->render('CLMailer:mailer:preview.html.twig', [
+        return $this->render('CLMailerBundle:mailer:preview.html.twig', [
             'html' => $html,
         ]);
     }
+
+    /**
+     * @param object $mailer
+     * @param string $type
+     *
+     * @return \Swift_Message
+     */
+    abstract protected function createMessage($mailer, $type);
 }

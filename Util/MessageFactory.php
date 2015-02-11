@@ -1,6 +1,6 @@
 <?php
 
-namespace CL\Bundle\MailerBundle\Mailer;
+namespace CL\Bundle\MailerBundle\Util;
 
 use Symfony\Component\Translation\TranslatorInterface;
 

@@ -1,20 +1,23 @@
 services:
-  cl_mailer.message_renderer:
-    class: CL\Bundle\MailerBundle\Mailer\MessageRenderer
+  cl_mailer.util.message_renderer:
+    class: CL\Bundle\MailerBundle\Util\MessageRenderer
     arguments:
       # Engine to use will be overridden by RegisterRenderingEnginePass
       - @templating.engine.php
 
-  cl_mailer.message_factory:
-    class: CL\Bundle\MailerBundle\Mailer\MessageFactory
+  cl_mailer.util.message_factory:
+    class: CL\Bundle\MailerBundle\Util\MessageFactory
     arguments:
       - @cl_mailer.message_renderer
       - @translator
       - %cl_mailer.types%
       - %cl_mailer.defaults%
 
-  cl_mailer.mailer_helper:
-    class: CL\Bundle\MailerBundle\Mailer\MailerHelper
+  cl_mailer.util.mailer_previewer:
+    class: CL\Bundle\MailerBundle\Util\MailerPreviewer
+
+  cl_mailer.util.mailer_helper:
+    class: CL\Bundle\MailerBundle\Util\MailerHelper
     arguments:
       - @swiftmailer.mailer
       - @cl_mailer.message_factory

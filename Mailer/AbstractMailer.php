@@ -2,6 +2,8 @@
 
 namespace CL\Bundle\MailerBundle\Mailer;
 
+use CL\Bundle\MailerBundle\Util\MailerHelper;
+
 abstract class AbstractMailer
 {
     /**

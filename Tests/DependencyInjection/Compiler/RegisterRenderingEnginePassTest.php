@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
 {
-    const MESSAGE_RENDERER_ID = 'cl_mailer.message_renderer';
+    const MESSAGE_RENDERER_ID = 'cl_mailer.util.message_renderer';
     const TWIG_ENGINE_ID      = 'templating.engine.twig';
     const PHP_ENGINE_ID       = 'templating.engine.php';
 
@@ -107,7 +107,7 @@ class RegisterRenderingEnginePassTest extends AbstractCompilerPassTestCase
      */
     private function createMessageRendererDefinition()
     {
-        return $this->createDefinition(self::MESSAGE_RENDERER_ID, 'CL\Bundle\MailerBundle\Mailer\MessageRenderer');
+        return $this->createDefinition(self::MESSAGE_RENDERER_ID, 'CL\Bundle\MailerBundle\Util\MessageRenderer');
     }
 
     /**

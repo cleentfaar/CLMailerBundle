@@ -11,14 +11,14 @@ class RegisterMailersPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $registryId     = 'cl_mailer.util.mailer_registry';
-        $types          = $container->getParameter('cl_mailer.types');
-        $defaultOptions = $container->getParameter('cl_mailer.defaults');
+        $registryId = 'cl_mailer.util.mailer_registry';
 
-        if (!$container->hasDefinition($registryId)) {
+        if (!$container->hasParameter('cl_mailer.types') || !$container->hasParameter('cl_mailer.defaults') || !$container->hasDefinition($registryId)) {
             return;
         }
 
+        $types              = $container->getParameter('cl_mailer.types');
+        $defaultOptions     = $container->getParameter('cl_mailer.defaults');
         $registryDefinition = $container->getDefinition($registryId);
 
         foreach ($types as $type => $options) {

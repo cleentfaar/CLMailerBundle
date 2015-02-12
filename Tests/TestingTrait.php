@@ -27,6 +27,7 @@ trait TestingTrait
             'from_email' => 'john@doe.com',
             'template'   => 'path/to/template',
             'subject'    => 'This is the subject of this e-mail',
+            'mailer'     => 'acme.mailer',
         ];
     }
 }

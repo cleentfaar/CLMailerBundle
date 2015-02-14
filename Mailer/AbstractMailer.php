@@ -2,8 +2,7 @@
 
 namespace CL\Bundle\MailerBundle\Mailer;
 
-print_r(get_declared_classes());exit;
-//use CL\Bundle\MailerBundle\Util\MailerHelper;
+use CL\Bundle\MailerBundle\Util\MailerHelper;
 
 abstract class AbstractMailer implements MailerInterface
 {
